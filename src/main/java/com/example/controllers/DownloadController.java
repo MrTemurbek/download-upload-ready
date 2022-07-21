@@ -1,6 +1,7 @@
 package com.example.controllers;
 
 import com.example.repo.ItemRepository;
+import com.example.util.JWT;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,38 +14,33 @@ import reactor.core.publisher.Mono;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 @RestController
 public class DownloadController {
+    private final JWT jwt;
+
     private final ItemRepository itemRepository;
 
-    public DownloadController(ItemRepository itemRepository) {
+    public DownloadController(JWT jwt, ItemRepository itemRepository) {
+        this.jwt = jwt;
         this.itemRepository = itemRepository;
     }
 
     @GetMapping("/download/file")
     public Mono<Void> downloadFile(@RequestParam("file-name") String token,
-                                   ServerHttpResponse response) throws IOException {
-        return getFileName(token).flatMap(file1 -> {
-            try {
-                ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
-                response.getHeaders().set(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=" + file1 + "");
-                response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-                ClassPathResource resource = new ClassPathResource("upload/" + file1);
-                File file = resource.getFile();
-                return zeroCopyResponse.writeWith(file, 0, file.length());
-            } catch (Exception e) {
-                return Mono.error(new RuntimeException(e));
-            }
-        });
+                                   ServerHttpResponse response ) throws IOException {
+        String fileName =getFileName(token);
+        ZeroCopyHttpOutputMessage zeroCopyResponse = (ZeroCopyHttpOutputMessage) response;
+        response.getHeaders().set(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=" + fileName + "");
+        response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        ClassPathResource resource = new ClassPathResource("upload/"+ fileName);
+        File file = resource.getFile();
+        return zeroCopyResponse.writeWith(file, 0, file.length());
     }
 
-    Mono<String> getFileName(String token) throws RuntimeException {
-        return itemRepository.findAllByToken(token)
-                .flatMap(data -> {
-                    return Mono.just(data.getName());
-                });
+
+    String getFileName(String token) throws RuntimeException {
+        return jwt.decodeJWT(token).getSubject();
     }
 }
