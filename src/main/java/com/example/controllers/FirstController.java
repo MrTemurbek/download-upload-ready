@@ -43,11 +43,7 @@ public class FirstController {
     }
 
 
-    @GetMapping("/registration")
-    public String registrationPage() {
-        System.out.println("1");
-        return "register";
-    }
+
 
 
     @PostMapping("/registration")

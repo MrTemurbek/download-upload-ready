@@ -12,10 +12,21 @@ public class Item {
     private String username;
     private String path;
 
-    public Item(String name, String username, String path) {
+    private String token;
+
+    public Item(String name, String username, String path, String token) {
         this.name = name;
         this.username = username;
         this.path = path;
+        this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getName() {
