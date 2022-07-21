@@ -32,12 +32,22 @@ public class Person  {
     @Column("role")
     private String role;
 
+    @Column("timer")
+    private Long expirationTime;
 
+    public Long getExpirationTime() {
+        return expirationTime;
+    }
 
-    public Person(String username, int yearOfBirth, String role) {
+    public void setExpirationTime(Long expirationTime) {
+        this.expirationTime = expirationTime;
+    }
+
+    public Person(String username, int yearOfBirth, String role, Long expirationTime) {
         this.username = username;
         this.yearOfBirth = yearOfBirth;
         this.role = role;
+        this.expirationTime = expirationTime;
     }
 
     public String getRole() {

@@ -6,7 +6,9 @@ create table person
     username      varchar not null,
     password      varchar not null,
     year_of_birth integer not null,
-    role          varchar not null
+    role          varchar not null,
+    timer         bigint not null
+
 );
 
 alter table person

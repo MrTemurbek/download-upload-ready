@@ -12,6 +12,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
+import javax.security.auth.login.AccountExpiredException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 @Service
@@ -31,8 +34,21 @@ public class PersonService implements ReactiveUserDetailsService {
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return peopleRepository.findByUsername(username)
-                .map(person -> new User(person.getUsername(), person.getPassword(), List.of(new SimpleGrantedAuthority(person.getRole()))));
+        return  peopleRepository.findByUsername(username)
+                .map(person ->{
+                    boolean expiration = true;
+                    if(person.getExpirationTime() < System.currentTimeMillis()){
+                        expiration= false;
+                    }
+                    return new User(person.getUsername(), person.getPassword(), true, expiration,
+                            true, true, List.of(new SimpleGrantedAuthority(person.getRole())));}
+
+
+//                        new User(person.getUsername(), person.getPassword(), List.of(new SimpleGrantedAuthority(person.getRole())))
+
+
+                );
+
     }
 
 
@@ -48,6 +64,7 @@ public class PersonService implements ReactiveUserDetailsService {
     public void registerUser(Person person) {
         person.setPassword(passwordEncoder.encode(person.getPassword()));
         person.setRole("ROLE_USER");
+        person.setExpirationTime(System.currentTimeMillis() + 120000L);
         peopleRepository.save(person).subscribe();
     }
 

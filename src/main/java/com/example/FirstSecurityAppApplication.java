@@ -50,7 +50,8 @@ public class FirstSecurityAppApplication   {
 					"    username      varchar not null,\n" +
 					"    password      varchar not null,\n" +
 					"    year_of_birth integer not null,\n" +
-					"    role          varchar not null\n" +
+					"    role          varchar not null,\n" +
+					"timer         bigint not null"+
 					");\n" +
 					"\n" +
 					"alter table person\n" +
@@ -59,8 +60,19 @@ public class FirstSecurityAppApplication   {
 					"create unique index person_id_uindex\n" +
 					"    on person (id);" );
 			System.out.println("Person table is created");
+
 		} catch (Exception e) {
-			System.out.println("Person table already created");
+			System.out.println("Person table is already created");
+		}
+
+		try {
+			statement.execute("INSERT INTO person(id, username, password, year_of_birth, role, timer) " +
+					"values (0, 'admin', '$2a$10$1fGl7V0Z9xb6gC0AVtcXfu2Rjy3HsQyaqCjQ7mW0Fg6mkyD9DtnjO', 1900, 'ROLE_ADMIN', 1690830000000)");
+
+			System.out.println("DEFAULT USERNAME: ADMIN  \n DEFAULT PASSWORD: 123");
+		}
+		catch (Exception e) {
+			System.out.println("Admin is already created");
 		}
 		try {
 			statement.execute("create table items\n" +
@@ -81,17 +93,9 @@ public class FirstSecurityAppApplication   {
 					"    on items (id);");
 			System.out.println("Item table is created");
 		} catch (Exception e) {
-			System.out.println("Item table already created");
+			System.out.println("Item table is already created");
 	}
-	try {
-		statement.execute("INSERT INTO person(id, username, password, year_of_birth, role) " +
-				"values (0, 'admin', '$2a$10$1fGl7V0Z9xb6gC0AVtcXfu2Rjy3HsQyaqCjQ7mW0Fg6mkyD9DtnjO', 1900, 'ROLE_ADMIN')");
 
-		System.out.println("DEFAULT USERNAME: ADMIN  \n DEFAULT PASSWORD: 123");
-	}
-	catch (Exception e) {
-		System.out.println("Admin already created");
-	}
 
 	}}
 
