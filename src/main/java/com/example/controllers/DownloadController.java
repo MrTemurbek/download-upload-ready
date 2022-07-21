@@ -34,8 +34,7 @@ public class DownloadController {
         response.getHeaders().set(HttpHeaders.CONTENT_DISPOSITION,
                 "attachment; filename=" + fileName + "");
         response.getHeaders().setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        ClassPathResource resource = new ClassPathResource("upload/"+ fileName);
-        File file = resource.getFile();
+        File file = ResourceUtils.getFile("C:/Users/user/Desktop/download-upload-master/src/main/resources/upload/"+ fileName);
         return zeroCopyResponse.writeWith(file, 0, file.length());
     }
 
