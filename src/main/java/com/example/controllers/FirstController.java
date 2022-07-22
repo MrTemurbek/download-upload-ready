@@ -41,6 +41,13 @@ public class FirstController {
         return "redirect:/login";
     }
 
+    @GetMapping("/menu")
+    public Mono<Void> redirectMenu(ServerHttpResponse response){
+        response.setStatusCode(HttpStatus.PERMANENT_REDIRECT);
+        response.getHeaders().setLocation(URI.create("/"));
+        return response.setComplete();
+    }
+
 }
 
 
