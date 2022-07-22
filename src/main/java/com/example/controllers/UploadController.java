@@ -31,5 +31,4 @@ public class UploadController {
     public Mono<Void> uploadV2(@RequestPart("fileToUpload") Mono<FilePart> filePartMono, Authentication authentication) {
         return itemService.upload(filePartMono, authentication);
     }
-
 }
