@@ -8,9 +8,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface ItemRepository extends R2dbcRepository<Item, Long> {
-
-    @Query("SELECT i.path FROM items i where i.token =:token")
-    Mono<String> getFileNameByToken(String token);
-
     Mono<Item> findAllByToken(String token);
 }

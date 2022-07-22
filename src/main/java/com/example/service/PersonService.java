@@ -4,61 +4,51 @@ import com.example.models.Item;
 import com.example.models.Person;
 import com.example.repo.ItemRepository;
 import com.example.repo.PeopleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.util.JWT;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ZeroCopyHttpOutputMessage;
+import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 import reactor.core.publisher.Mono;
-
-import javax.security.auth.login.AccountExpiredException;
-import java.util.Date;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
+
 @Service
 public class PersonService implements ReactiveUserDetailsService {
-
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-
     private final PeopleRepository peopleRepository;
-    private final ItemRepository itemRepository;
+    ObjectMapper mapper = new ObjectMapper();
+    private final Path basePath = Paths.get("./src/main/resources/upload/");
+    private final String path = "./src/main/resources/upload/";
 
-    public PersonService(PasswordEncoder passwordEncoder, PeopleRepository peopleRepository, ItemRepository itemRepository) {
+    public PersonService(PasswordEncoder passwordEncoder, PeopleRepository peopleRepository) {
         this.passwordEncoder = passwordEncoder;
         this.peopleRepository = peopleRepository;
-        this.itemRepository = itemRepository;
     }
 
     @Override
     public Mono<UserDetails> findByUsername(String username) {
-        return  peopleRepository.findByUsername(username)
-                .map(person ->{
-                    boolean expiration = true;
-                    if(person.getExpirationTime() < System.currentTimeMillis()){
-                        expiration= false;
-                    }
-                    return new User(person.getUsername(), person.getPassword(), true, expiration,
-                            true, true, List.of(new SimpleGrantedAuthority(person.getRole())));}
-
-
-//                        new User(person.getUsername(), person.getPassword(), List.of(new SimpleGrantedAuthority(person.getRole())))
-
-
+        return peopleRepository.findByUsername(username)
+                .map(person -> {
+                            boolean expiration = person.getExpirationTime() >= System.currentTimeMillis();
+                            return new User(person.getUsername(), person.getPassword(), true, expiration,
+                                    true, true, List.of(new SimpleGrantedAuthority(person.getRole())));
+                        }
                 );
 
-    }
-
-
-    public Mono<Object> addData(String username){
-        return peopleRepository.findByUsername(username)
-                .flatMap(data->{
-                    Item item=new Item();
-                    item.setUsername(data.getUsername());
-                    return itemRepository.save(item);
-                });
     }
 
     public void registerUser(Person person) {
@@ -68,7 +58,5 @@ public class PersonService implements ReactiveUserDetailsService {
         peopleRepository.save(person).subscribe();
     }
 
-
-    private Map<String, Person> data;
 
 }

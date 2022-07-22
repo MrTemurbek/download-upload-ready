@@ -35,31 +35,12 @@ public class FirstController {
         return "download";
     }
 
-    @GetMapping("/menu")
-    public Mono<Void> redirectMenu(ServerHttpResponse response){
-        response.setStatusCode(HttpStatus.PERMANENT_REDIRECT);
-        response.getHeaders().setLocation(URI.create("/"));
-        return response.setComplete();
-    }
-
-
-
-
-
     @PostMapping("/registration")
     public String createPerson(@RequestBody Person person) {
-        System.out.println(person);
-//        if(personService.findByUsername(person.getUsername()) == null) {
         personService.registerUser(person);
         return "redirect:/login";
-//        }
-
-//        return "redirect:/register";
-
     }
-
 }
 
-//        return "redirect:/login";
 
 

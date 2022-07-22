@@ -9,21 +9,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 
 @EnableWebFluxSecurity
 public class SecurityConfig {
-
-//    @Bean
-//    public ReactiveUserDetailsService userDetailsService() {
-//        return repository::findByUsername;
-//    }
-
-
     @Bean
     public PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-        http
+        return http
                 .csrf()
                 .disable()
                 .authorizeExchange()
@@ -42,10 +34,9 @@ public class SecurityConfig {
                 .and()
                 .httpBasic()
                 .and()
-                .formLogin();
-
-        return http.build();
+                .formLogin()
+                .and()
+                .build();
     }
-
 }
 
