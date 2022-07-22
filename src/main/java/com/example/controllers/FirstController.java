@@ -40,6 +40,7 @@ public class FirstController {
         personService.registerUser(person);
         return "redirect:/login";
     }
+
 }
 
 
