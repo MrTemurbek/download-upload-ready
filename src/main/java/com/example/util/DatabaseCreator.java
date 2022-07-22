@@ -26,6 +26,13 @@ public class DatabaseCreator {
         connection = DriverManager.getConnection(url1, username1, password1);
         System.out.println("Connection to database is success");
         statement = connection.createStatement();
+        try{
+            statement.execute("create database 'download-upload'" );
+            System.out.println("Upload-Download Database created successfully");
+        }
+        catch (Exception e){
+            System.out.println("Upload-Download Database is already created");
+        }
         try {
             statement.execute("create table person\n" +
                     "(\n" +
